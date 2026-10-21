@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parametric Multi-axis DED G-code Generator</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">ME323 · Haas + Meltio · simulation-only toolpath study</p>
+      <h1>Parametric multi-axis DED G-code generator</h1>
+      <p class="lede">Generate an expanded four-stage program for an inner nozzle shell, inner fins, an outer shell in a second material, and outer fins.</p>
+    </div>
+    <div class="status" id="status">Ready</div>
+  </header>
+
+  <main>
+    <form id="parameter-form" class="parameter-panel">
+      <section>
+        <h2>1. Nozzle profile</h2>
+        <div class="grid">
+          <label>Total height, mm<input name="height" type="number" min="10" max="200" step="1"></label>
+          <label>Throat Z, mm<input name="throat_z" type="number" min="1" step="1"></label>
+          <label>Inlet radius, mm<input name="inlet_radius" type="number" min="1" step="1"></label>
+          <label>Throat radius, mm<input name="throat_radius" type="number" min="1" step="1"></label>
+          <label>Outlet radius, mm<input name="outlet_radius" type="number" min="1" step="1"></label>
+          <label>Safe Z, mm<input name="safe_z" type="number" min="20" step="1"></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>2. Deposition sampling</h2>
+        <div class="grid">
+          <label>Layer height, mm<input name="layer_height" type="number" min="0.2" max="5" step="0.1"></label>
+          <label>Bead width, mm<input name="bead_width" type="number" min="0.1" step="0.1"></label>
+          <label>Angular step, deg<input name="angular_step_deg" type="number" min="2" max="30" step="1"></label>
+          <label>Deposition feed, mm/min<input name="deposition_feed" type="number" min="1" step="10"></label>
+          <label>Travel feed, mm/min<input name="travel_feed" type="number" min="1" step="10"></label>
+          <label>Maximum tilt, deg<input name="max_tilt_deg" type="number" min="0" max="90" step="1"></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Material 1 and inner fins</h2>
+        <div class="grid">
+          <label>Material name<input name="material_1" type="text"></label>
+          <label>Wall passes<input name="inner_wall_passes" type="number" min="1" max="5" step="1"></label>
+          <label>Fin count<input name="inner_fin_count" type="number" min="1" max="64" step="1"></label>
+          <label>Fin height, mm<input name="inner_fin_height" type="number" min="0.1" step="0.5"></label>
+          <label>Fin turns over height<input name="inner_fin_turns" type="number" step="0.05"></label>
+          <label>Radial fin layers<input name="inner_fin_radial_layers" type="number" min="1" max="12" step="1"></label>
+          <label>Fin phase, deg<input name="inner_fin_phase_deg" type="number" step="1"></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>4. Material 2 and outer fins</h2>
+        <div class="grid">
+          <label>Material name<input name="material_2" type="text"></label>
+          <label>Wall passes<input name="outer_wall_passes" type="number" min="1" max="5" step="1"></label>
+          <label>Fin count<input name="outer_fin_count" type="number" min="1" max="64" step="1"></label>
+          <label>Fin height, mm<input name="outer_fin_height" type="number" min="0.1" step="0.5"></label>
+          <label>Fin turns over height<input name="outer_fin_turns" type="number" step="0.05"></label>
+          <label>Radial fin layers<input name="outer_fin_radial_layers" type="number" min="1" max="12" step="1"></label>
+          <label>Fin phase, deg<input name="outer_fin_phase_deg" type="number" step="1"></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>5. Generic Haas axis convention</h2>
+        <div class="grid">
+          <label>Tilt axis
+            <select name="tilt_axis"><option>A</option><option>B</option></select>
+          </label>
+          <label>Rotary axis
+            <select name="rotary_axis"><option>A</option><option>B</option><option>C</option></select>
+          </label>
+          <label>Tilt sign
+            <select name="tilt_sign"><option value="1">+1</option><option value="-1">−1</option></select>
+          </label>
+          <label>Rotary sign
+            <select name="rotary_sign"><option value="1">+1</option><option value="-1">−1</option></select>
+          </label>
+          <label>Work offset<input name="work_offset" type="text"></label>
+          <label>Laser/wire ON code<input name="laser_on_code" type="text"></label>
+          <label>Laser/wire OFF code<input name="laser_off_code" type="text"></label>
+          <label>Program number<input name="program_number" type="number" min="1" max="99999" step="1"></label>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="primary">Generate G-code</button>
+        <button type="button" id="reset">Restore defaults</button>
+      </div>
+    </form>
+
+    <section class="results">
+      <div class="result-heading">
+        <div>
+          <p class="eyebrow">Generated program</p>
+          <h2>Expanded Haas-style NC file</h2>
+        </div>
+        <div class="actions compact">
+          <button id="download-nc" disabled>Download .NC</button>
+          <button id="download-rep5x" disabled>Download Rep5x preview</button>
+          <button id="download-penta" disabled>Download Penta table-motion preview</button>
+          <button id="download-json" disabled>Download parameters</button>
+          <button id="copy" disabled>Copy code</button>
+        </div>
+      </div>
+
+      <div class="metrics" id="metrics">
+        <div><span>Moves</span><strong>—</strong></div>
+        <div><span>Lines</span><strong>—</strong></div>
+        <div><span>Path length</span><strong>—</strong></div>
+        <div><span>Z range</span><strong>—</strong></div>
+      </div>
+
+      <div class="warning" id="warnings">
+        The file is for geometric simulation only. It is not calibrated machine code.
+      </div>
+
+      <textarea id="gcode" spellcheck="false" readonly placeholder="Generated G-code will appear here."></textarea>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Four stages:</strong> Material 1 shell · Material 1 fins · Material 2 shell · Material 2 fins</p>
+    <p>Machine execution requires the installed rotary kinematics, Meltio command map and approved process profile.</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

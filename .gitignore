@@ -1,0 +1,14 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+*.app/
+build/
+*.dylib
+*.log
+*.mp4
+video-frames/
+.env
+.env.*
+outputs/simulator-review/runtime_program.nc
+outputs/simulator-review/runtime_verification.json

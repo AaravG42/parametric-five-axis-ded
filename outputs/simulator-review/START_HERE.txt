@@ -1,0 +1,77 @@
+FIVE-AXIS NOZZLE DEMONSTRATION — MAC
+
+1. Double-click ../gcode-generator/Start Nozzle Demo.command.
+2. Open http://127.0.0.1:8000/ if it is not already open.
+3. Use the 80 mm demo preset, then click Run in CoppeliaSim.
+4. Switch to the CoppeliaSim window. Close the floating filament controls
+   if they cover the machine. The original machine model shows XYZ head
+   motion, B/C table rotation, and accumulating solid bead elements.
+5. Pause / Resume are available on the local webpage. At the end the
+   simulation pauses automatically, retaining the completed part.
+   Stop clears the part. Run restarts the whole program from the beginning.
+
+WHAT TO PRESENT
+The program constructs an inner converging/diverging shell, adds curved
+fins, builds a second shell around those fins, then adds external fins.
+Orange and blue indicate the two simulated materials. The preset is 80 mm
+tall. Dimensions, fin count, fin twist, fin depth and bead/layer spacing
+can be changed on the local page. Some large combinations exceed this
+simulator machine's travel and are rejected.
+
+VIDEO EXPORT
+export_video.py renders the existing simulator through its native vision-camera
+API and pipes RGB frames into FFmpeg. It does not render or simulate the machine
+itself. The deposition plugin's paint-tag flag makes deposited beads visible to
+this camera. This avoids the bundled Mac recorder's fetch-frame crash.
+With the simulator and nozzle scene open, run from this directory:
+.venv/bin/python export_video.py --output nozzle-full-build-new.mp4
+The export replays the complete program, includes an empty-bed opening and a
+finished-part ending, and saves a fresh geometry verification report. It will
+not overwrite an existing video. Output is 1080p H.264 MP4 at 20 fps, silent.
+
+READ THE CODE IN THIS ORDER
+../gcode-generator/generator.py: profile_radius and profile_slope define
+the smooth converging/diverging shape. Older schematic exporters in this
+file are preserved but are NOT used for the new simulator.
+../gcode-generator/fibr3d_export.py: generates shell helices and curved
+fin paths, then compensates XYZ for the measured B/C table pivots.
+play_gcode.py: reads explicit G0/G1 XYZBC moves and sends them to the
+existing FIBR3DEmul motion/deposition plugin. M80/M81 are simulated
+deposition flags; T1/T2 select colours. They are NOT verified Haas codes.
+../gcode-generator/simulation_runner.py: starts the installed simulator
+and player from the local HTML interface. No custom renderer is used.
+
+FILES FROM THE LATEST LOCALHOST RUN
+runtime_program.nc: exact code played by the simulator.
+runtime_verification.json: completion and numerical check results.
+playback.log: operation names and progress.
+nozzle_scene.ttt: prepared original FIBR3DEmul machine scene.
+machine_calibration.json: measured axes and pivots of that scene.
+
+VERIFICATION
+The player waits for completed blocks, checks all five joint positions,
+and compares the actual head deposition point with the bed-transformed
+part coordinates approximately every 96 moves and at operation boundaries.
+This tests kinematics, not manufacturing feasibility or material physics.
+Unit tests: from gcode-generator run:
+../simulator-review/.venv/bin/python -m unittest test_generator test_fibr3d -v
+
+IMPORTANT LIMITS
+This is a generic XYZ-head/BC-table demonstration, not a Haas UMC1000SS
+digital twin. It does not certify collision avoidance, head accessibility,
+unsupported deposition, thermal history, metallurgy, or real Meltio I/O.
+Fin-first/shell-first sequencing and retractions need manufacturing review
+before any physical build. Never transfer these demonstration files to
+the real machine. No physical machine was connected or operated.
+
+EXISTING SOFTWARE AND PORT
+FIBR3DEmul: https://github.com/neuebot/FIBR3DEmul (GPL source retained).
+CoppeliaSim Edu: official macOS ARM64 distribution, eligible educational
+use only; not an unrestricted commercial-use license.
+The original legacy plugin was ported to this Mac. Compatibility fixes
+include safe legacy joint reads, measured axis orientation for drawing,
+exact interpolation endpoints, thread-safe motion queues, restartable
+loopback networking, and completion/deposition-count telemetry.
+The existing material renderer and machine model do the simulation.
+The original Windows C# sender is replaced by the readable Python sender.
+Build sources are retained in FIBR3DEmul/v-rep_plugin.

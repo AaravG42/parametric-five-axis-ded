@@ -1,0 +1,138 @@
+:root {
+  color-scheme: dark;
+  --bg: #0c1317;
+  --panel: #121d22;
+  --panel-2: #17262d;
+  --ink: #f2f1ec;
+  --muted: #9fb0b7;
+  --line: #2b3b42;
+  --blue: #58a7c4;
+  --orange: #f08a4b;
+  --green: #76b28c;
+  --danger: #efb18f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.hero, main, footer {
+  width: min(1480px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.hero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 54px 0 34px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 14px; font-size: clamp(32px, 4.2vw, 62px); line-height: 1.02; max-width: 1000px; }
+h2 { margin-bottom: 18px; font-size: 20px; }
+.lede { margin-bottom: 0; color: var(--muted); font-size: 18px; max-width: 880px; line-height: 1.55; }
+.status { padding: 9px 14px; border: 1px solid var(--line); color: var(--green); font: 700 13px ui-monospace, monospace; }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(560px, 1fr) minmax(520px, .9fr);
+  gap: 24px;
+  padding: 28px 0;
+  align-items: start;
+}
+
+.parameter-panel, .results {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.parameter-panel section { padding: 24px; border-bottom: 1px solid var(--line); }
+.parameter-panel section:nth-child(even) { background: rgba(255,255,255,.012); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+label { display: grid; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 700; }
+
+input, select, textarea, button {
+  font: inherit;
+}
+
+input, select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #0e171b;
+  color: var(--ink);
+  padding: 10px 11px;
+  outline: none;
+}
+
+input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(88,167,196,.15); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px 24px; }
+.actions.compact { padding: 0; justify-content: end; }
+button {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--ink);
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: 750;
+}
+button.primary { background: var(--orange); border-color: var(--orange); color: #111; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+
+.results { position: sticky; top: 16px; padding: 24px; }
+.result-heading { display: flex; align-items: start; justify-content: space-between; gap: 24px; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--line); margin: 6px 0 18px; }
+.metrics div { padding: 14px 12px; border-right: 1px solid var(--line); }
+.metrics div:last-child { border-right: 0; }
+.metrics span { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.metrics strong { display: block; margin-top: 5px; font: 750 17px ui-monospace, monospace; }
+.warning { padding: 13px 15px; background: rgba(240,138,75,.10); border-left: 3px solid var(--orange); color: var(--danger); font-size: 13px; line-height: 1.5; }
+
+textarea {
+  width: 100%;
+  min-height: 680px;
+  margin-top: 18px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  background: #081014;
+  color: #d8e6eb;
+  padding: 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.48;
+  tab-size: 2;
+}
+
+footer { display: flex; justify-content: space-between; gap: 30px; padding: 24px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+footer p { margin: 0; }
+
+@media (max-width: 1050px) {
+  main { grid-template-columns: 1fr; }
+  .results { position: static; }
+}
+
+@media (max-width: 680px) {
+  .hero, main, footer { width: min(100% - 24px, 1480px); }
+  .hero, footer, .result-heading { display: block; }
+  .status { display: inline-block; margin-top: 20px; }
+  .grid { grid-template-columns: 1fr 1fr; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .actions.compact { justify-content: start; margin: 12px 0; }
+}

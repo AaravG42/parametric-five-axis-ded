@@ -1,0 +1,27 @@
+{
+  "file": "outputs/simulator-review/baseline_program.nc",
+  "complete": true,
+  "moves": 46203,
+  "samples_verified": 485,
+  "max_point_error_mm": 2.0464167061329945e-05,
+  "stages": [
+    {
+      "stage": "INNER SHELL",
+      "items_before": 0
+    },
+    {
+      "stage": "INNER FINS",
+      "items_before": 10787
+    },
+    {
+      "stage": "OUTER SHELL",
+      "items_before": 16587
+    },
+    {
+      "stage": "OUTER FINS",
+      "items_before": 30220
+    }
+  ],
+  "note": "Geometric simulation only; collision-free manufacture, Haas controller behavior and thermal behavior are not validated.",
+  "deposited_items": 38162
+}
